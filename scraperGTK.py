@@ -10,6 +10,8 @@ from gi.repository import Gtk
 import time 
 
 URL=input('Paste the URL of the Reddit post you want to follow: ')
+timer=input('How often do you want an update (in minutes)? ')
+print('Press CTRL-C to quit')
 
 headers = {"User-Agent": 'Mozilla/5.0 (X11; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0'}
 
@@ -21,7 +23,8 @@ def getComments():
     soup = BeautifulSoup(page.content, 'html.parser')
 
     divTxt = soup.find_all("div", {'data-test-id':"comment"})
-    title = soup.div.find_all('h1')[0].get_text()
+    currentTime = time.strftime('%H:%M',time.gmtime())
+    title = currentTime + ' | POST: '+ soup.div.find_all('h1')[0].get_text()
     count = 0
     message = ''
 
@@ -33,13 +36,15 @@ def getComments():
 
     Gtk.init(None)
     Hello = Gtk.MessageDialog(message_type=Gtk.MessageType.INFO,
-                              buttons=Gtk.ButtonsType.OK,
                               text=title,
+                              buttons=GTK_BUTTONS_CLOSE,
                               secondary_text=message)
 
     Hello.run()
+    time.sleep(45)
+    Hello.destroy()
 
 if __name__== "__main__":
     while(True):
         getComments()
-        time.sleep(60)
+        time.sleep(int(timer)*60)
